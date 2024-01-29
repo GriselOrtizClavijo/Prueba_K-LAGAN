@@ -1,0 +1,258 @@
+--Pruebas SQL DB2
+
+EJERCICIO 1:
+
+******** Dada la tabla ORDER (especificada con el create table que hay a continuación), y dada  una lista de IDs de pedido (coincidenctes con la columna ORDERS_ID) se necesita crear una consulta que obtenga el subconjunto de IDs de pedido que no se encuentran en la tabla.
+-- Lista de IDS de pedido: 11111111, 22222222,33333333,44444444
+--TABLAS
+CREATE TABLE ORDER(
+    ORDERS_ID INTEGER NOT NULL,
+    TOTAL_ORDER INTEGER,
+	STOREENT_ID INTEGER NOT NULL,
+	LASTUPDATE TIMESTAMP(12),
+	TIMEPLACED TIMESTAMP(12),               NOTA: (Solo admiten un timestamp en la tabla a la vez y máximo de 6)
+	PRIMARY KEY (ORDERS_ID)	
+);
+
+------------------------------ SOLUCION EJERCICIO 1------------------------------------
+
+SELECT *
+FROM (
+    SELECT 11111111 AS ORDERS_ID
+    UNION
+    SELECT 22222222
+    UNION
+    SELECT 33333333
+    UNION
+    SELECT 44444444
+) AS subconjunto_ids
+WHERE ORDERS_ID NOT IN (SELECT ORDERS_ID FROM ORDERS);
+------------------------------------------------------------------------------------------------------------------------------------------------------
+
+EJERCICIO 2: 
+******** Sacar un informe de cuántos pedidos hemos hecho por día agrupados por nombre tienda
+-- TABLAS
+CREATE TABLE ORDERS_ID (
+    ORDERS_ID INTEGER NOT NULL,
+    TOTAL_ORDER INTEGER,
+	STORE_ID INTEGER NOT NULL,
+	LASTUPDATE TIMESTAMP(12),
+	TIMEPLACED TIMESTAMP(12),
+	PRIMARY KEY (ORDERS_ID)	
+);
+
+CREATE TABLE STORE (
+    STORE_ID INTEGER NOT NULL,
+    NAME VARCHAR(300),
+	PRIMARY KEY (STORE_ID)	
+);
+
+
+------------------------------ SOLUCION EJERCICIO 2------------------------------------
+
+SELECT
+    s.NAME AS StoreName,
+    o.TIMEPLACED AS OrderDate,
+    COUNT(o.ORDERS_ID) AS OrderCount
+FROM
+    ORDERS_ID o
+JOIN
+    STORE s ON o.STORE_ID = s.STORE_ID
+GROUP BY
+    s.NAME,
+    o.TIMEPLACED;
+
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+
+EJERICIO 3
+
+******** Se quiere obtener la lista de usuarios de una base de datos, la lista de roles que tienen los mismos y su perfil, siendo el perfil algo inducido por los roles.
+
+Deben crearse dos soluciones:
+
+- Una que obtenga el resultado solo con una query, sin crear procedimientos ni tablas físicas temporales.
+
+SOLUCIÓN 1:
+
+SELECT
+    .nombre AS Usuario,
+    GROUP_CONCAT(R.nombre) AS Roles,
+    CASE
+        WHEN COUNT(R.id) = 1 THEN 'Perfil Individual'
+        WHEN COUNT(R.id) > 1 THEN 'Perfil Múltiple'
+        ELSE 'Sin Perfil'
+    END AS Perfil
+FROM
+    USUARIOS U
+JOIN
+    USUARIOS_ROLES UR ON U.id = UR.id_usuario
+JOIN
+    ROLES R ON UR.id_rol = R.id
+GROUP BY
+    U.id;
+
+
+
+- Otra a elección. Esta es optativa
+
+SOLUCIÓN 2:
+
+
+SELECT UserId, UserName
+
+
+La base de datos tiene el siguiente modelo:
+
+----------------------QUERY CREAR BBDD USERS
+
+Tabla USERS (User es palabra reservada se cambia por Users)
+
+- UserId
+
+- UserName
+
+CREATE TABLE USERS( 
+  UserId INTEGER,
+  UserName char(10)
+)
+
+----------------------QUERY CREAR BBDD ROLE
+
+Tabla ROLE
+
+- RoleID
+
+- RoleNAME
+
+CREATE TABLE ROLE( 
+  RoleId INTEGER,
+  RoleName char(10)
+)
+
+----------------------QUERY CREAR BBDD MBRROLE
+Tabla MBRROLE (tabla relacional entre User y Role)
+
+- UserId
+
+- RoleId
+
+CREATE TABLE MBRROLE( 
+  UserId INTEGER,
+  RoleId char(10)
+)
+
+-------------- INSERTAR VALORES TABLA ROLES
+Los valores que contiene la tabla ROLE son los siguientes:
+
+- Role1 OrderQuery
+
+- Role2 OrderUpdate
+
+- Role3 User
+
+- Role4 Support
+
+- Role5 Report
+
+
+INSERT INTO ROLE (roleid, rolename)
+VALUES
+  (1, 'OrderQuery'),
+  (2, 'OrderUpdate'),
+  (3, 'User'),
+  (4, 'Support'),
+  (5, 'Report');
+
+
+-------------- QUERY ROLES - USERS
+
+Un usuario puede tener de 0..n roles. Independientemente del resto de roles que tenga un usuario, el perfil del mismo se define de la siguiente forma y con la siguiente prioridad:
+
+- Si al menos tiene el rol de Support -> SYS
+
+- Si no Si al menos tiene el rol de User -> ADMIN
+
+- Si no Si al menos tiene el rol de OrderUpdate -> MANAGER
+
+- En otro caso pero con al menos un rol -> CONSULTANT
+
+- Si no tiene ningun rol -> indicar UNDEFINED
+
+
+Ejemplo. Dado el siguiente set de datos:
+
+
+User1 - Ana
+
+User2 - Juan
+
+User3 - Maria
+
+INSERT INTO USERS (UserId, UserName)
+VALUES
+  (1, 'Ana'),
+  (2, 'Juan'),
+  (3, 'María')
+
+
+User1 Role1
+
+User1 Role2
+
+INSERT INTO MBRROLE (UserId, RoleId)
+VALUES
+  (1, 1), -> Role1
+  (1, 2); -> Role2
+
+User2 Role1
+
+User2 Role2
+
+User2 Role4
+
+
+INSERT INTO MBRROLE (UserId, RoleId)
+VALUES
+  (2, 1), -> Role1
+  (2, 2), -> Role2
+  (2, 4); -> Role4
+
+Maria Role5
+
+INSERT INTO MBRROLE (UserId, RoleId)
+VALUES
+  (3, 5); -> Role5
+
+
+El resultado sería el siguiente:
+
+"Ana"; "OrderQuery,OrderUpdate" ; "MANAGER"
+
+"Juan" ; "OrderQuery,OrderUpdate, Support" ; "SYS"
+
+"Maria"; "Report"; "CONSULTANT"
+
+----------------          SOLUCION
+
+SELECT
+  U.UserName,
+  COALESCE(
+    STRING_AGG(R.RoleName, ', '),
+    'UNDEFINED'
+  ) AS Roles,
+  CASE
+    WHEN MAX(R.RoleName) = 'Support' THEN 'SYS'
+    WHEN MAX(R.RoleName) = 'User' THEN 'ADMIN'
+    WHEN MAX(R.RoleName) = 'OrderUpdate' THEN 'MANAGER'
+    ELSE 'CONSULTANT'
+  END AS Profile
+FROM
+  USERS U
+LEFT JOIN MBRROLE M ON U.UserId = M.UserId
+LEFT JOIN ROLE R ON M.RoleId = R.RoleId
+GROUP BY
+  U.UserName
+ORDER BY
+  U.UserName;
+

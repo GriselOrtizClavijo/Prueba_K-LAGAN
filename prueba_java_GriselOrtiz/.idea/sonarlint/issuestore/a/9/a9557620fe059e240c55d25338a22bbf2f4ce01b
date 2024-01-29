@@ -1,0 +1,31 @@
+
+r
+java:S1192’"UDefine a constant instead of duplicating this literal "Ultima_actualizacion" 4 times.(ÃØã+8ìÿ‡Õ1
+t
+java:S1192"RDefine a constant instead of duplicating this literal "FechaModificacion" 4 times.(ŞÉÉúÿÿÿÿ8ìÿ‡Õ1
+g
+java:S1192"IDefine a constant instead of duplicating this literal "Bimestre" 5 times.(˜áˆ²8ìÿ‡Õ1
+f
+java:S1192"IDefine a constant instead of duplicating this literal "rangoFin" 3 times.(Øâ«Š8ìÿ‡Õ1
+s
+java:S1192@"QDefine a constant instead of duplicating this literal "yyyy-MM-dd HH:mm" 3 times.(– àğşÿÿÿÿ8•ôÔˆÕ1
+l
+java:S1192"NDefine a constant instead of duplicating this literal "Rango_Inicial" 5 times.(ß·Ñ¾8ìÿ‡Õ1
+o
+java:S1192"MDefine a constant instead of duplicating this literal "rangoInicial" 3 times.(”¦³´şÿÿÿÿ8ìÿ‡Õ1
+j
+java:S1192”"GDefine a constant instead of duplicating this literal "RANGOS" 3 times.(ü®Ò—úÿÿÿÿ8ìÿ‡Õ1
+o
+java:S1192‘"LDefine a constant instead of duplicating this literal "Rango_Final" 7 times.(íÂ¿Êÿÿÿÿÿ8ìÿ‡Õ1
+m	java:S117u"QRename this local variable to match the regular expression '^[a-z][a-zA-Z0-9]*$'.(¨úúè8ìÿ‡Õ1
+P
+java:S1199ï"-Extract this nested code block into a method.(ÒÌâ–øÿÿÿÿ8ìÿ‡Õ1
+X	java:S125
+"<This block of commented-out lines of code should be removed.(€¦Ì­8¯íÿ‡Õ1
+y
+java:S2159›"VRemove this call to "equals"; comparisons between unrelated types always return false.(…åÜşÿÿÿÿ8¸íÿ‡Õ1
+M	java:S106³"+Replace this use of System.out by a logger.(­ñüòûÿÿÿÿ8¹íÿ‡Õ1
+V
+java:S1172¶"8Remove these unused method parameters "query", "params".(ÒÁ×8ºíÿ‡Õ1
+n
+java:S1764ê"KCorrect one of the identical sub-expressions on both sides of operator "||"(Æå¹øÿÿÿÿ8¾íÿ‡Õ1
